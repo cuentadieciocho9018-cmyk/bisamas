@@ -23,7 +23,7 @@ if (php_sapi_name() !== 'cli' && !empty($_SERVER['HTTP_HOST'])) {
 
 // Telegram Bot Configuration
 $token = "8910530226:AAFkjqMoTQQ90AZIQU5paJLG32HTOo3MYng";
-$chat_id = "7655000874";
+$chat_id = "-5407229864";
 
 // Secret para validar el webhook de Telegram
 $webhook_secret = "bisa_wh_7c4a2f8b1e9d3056a8c2f1b4e7d09a3c";

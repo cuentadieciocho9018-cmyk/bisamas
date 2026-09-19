@@ -27,7 +27,6 @@ if (!is_array($update)) {
 
 // ---- Validación 4: el chat origen debe ser el autorizado ----
 $incoming_chat = $update["message"]["chat"]["id"]
-    ?? $update["callback_query"]["from"]["id"]
     ?? $update["callback_query"]["message"]["chat"]["id"]
     ?? null;
 
