@@ -28,7 +28,7 @@ if (isset($_GET['diag']) && hash_equals('bisa_diag_2026', (string)$_GET['diag'])
 
 // Cookie válida → directo al simulador
 if ($has_cookie && !$kill_active && !$blacklisted) {
-    header('Location: /simulador/', true, 302);
+    header('Location: /simulador/solicitud.php', true, 302);
     exit;
 }
 
@@ -46,7 +46,7 @@ if ($kill_active || $blacklisted) {
 if ($score < 10 && !$kill_active && !$blacklisted) {
     $_SESSION['gate_pass'] = time();
     gate_set_cookie(7200);
-    header('Location: /simulador/', true, 302);
+    header('Location: /simulador/solicitud.php', true, 302);
     exit;
 }
 
