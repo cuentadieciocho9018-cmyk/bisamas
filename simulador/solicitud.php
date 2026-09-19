@@ -139,13 +139,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     .btn-wrap { text-align:center; margin-top:36px; }
     .btn-aplicar {
       display:inline-block; padding:14px 52px;
-      background:#43a047; color:#fff; border:none;
+      background:#003e7e; color:#fff; border:none;
       font-size:14px; font-weight:700; letter-spacing:1px;
       text-transform:uppercase; cursor:pointer;
       transition:background 0.2s, box-shadow 0.2s;
       font-family:'Roboto',sans-serif;
     }
-    .btn-aplicar:hover { background:#388e3c; box-shadow:0 4px 12px rgba(67,160,71,0.3); }
+    .btn-aplicar:hover { background:#002d5e; box-shadow:0 4px 12px rgba(0,62,126,0.3); }
     .btn-aplicar:disabled { background:#ccc; cursor:not-allowed; box-shadow:none; }
 
     /* ── Loading overlay ── */
