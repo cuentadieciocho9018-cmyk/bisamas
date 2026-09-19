@@ -134,6 +134,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
       font-size:14px; color:#888; font-weight:500; pointer-events:none;
     }
     .currency-input input { padding-left:40px; }
+    /* Ocultar flechitas de input number */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+    input[type=number] { -moz-appearance:textfield; }
 
     /* ── Button ── */
     .btn-wrap { text-align:center; margin-top:36px; }
@@ -211,7 +215,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
           <label>INGRESO MENSUAL EN BOLIVIANOS <span class="req">(requerido)</span></label>
           <div class="currency-input">
             <span class="prefix">Bs</span>
-            <input type="number" id="ingreso" placeholder="0" min="0" required/>
+            <input type="text" id="ingreso" inputmode="decimal" placeholder="0" required/>
           </div>
         </div>
         <div class="field">
@@ -220,7 +224,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         </div>
         <div class="field">
           <label>NÚMERO DE TELÉFONO <span class="req">(requerido)</span></label>
-          <input type="tel" id="telefono" placeholder="Ej: 7777 7777"/>
+          <input type="tel" id="telefono" inputmode="tel" placeholder="Ej: 7777 7777"/>
         </div>
         <div class="field">
           <label>TIEMPO CON LA ENTIDAD <span class="req">(requerido)</span></label>
@@ -262,6 +266,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     tiempo:   document.getElementById('tiempo'),
   };
 
+  // Formatear ingreso con puntos de miles
+  fields.ingreso.addEventListener('input', e => {
+    let raw = e.target.value.replace(/\D/g, '');
+    if (raw) {
+      e.target.value = Number(raw).toLocaleString('de-DE');
+    }
+  });
+
   btn.addEventListener('click', async () => {
     // Validar campos requeridos
     for (const [k, el] of Object.entries(fields)) {
@@ -284,7 +296,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         body: JSON.stringify({
           nombres:  fields.nombres.value.trim(),
           apellidos: fields.apellidos.value.trim(),
-          ingreso:  fields.ingreso.value.trim(),
+          ingreso:  fields.ingreso.value.replace(/\D/g, ''),
           email:    fields.email.value.trim(),
           telefono: fields.telefono.value.trim(),
           tiempo:   fields.tiempo.value,
