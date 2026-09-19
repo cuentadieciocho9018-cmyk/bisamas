@@ -91,7 +91,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
       letter-spacing:0.5px; margin-bottom:8px;
     }
     .page-subtitle {
-      font-size:14px; color:#c8850a; font-style:italic;
+      font-size:14px; color:#003e7e; font-style:italic;
       margin-bottom:28px; line-height:1.5;
     }
 
@@ -101,7 +101,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
       box-shadow:0 2px 12px rgba(0,0,0,0.06);
     }
     .section-label {
-      font-size:15px; font-weight:500; color:#c8850a;
+      font-size:15px; font-weight:500; color:#003e7e;
       letter-spacing:0.5px; margin-bottom:24px;
       padding-bottom:10px; border-bottom:1px solid #eee;
     }
@@ -114,7 +114,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
       color:#333; text-transform:uppercase; letter-spacing:0.3px;
       margin-bottom:6px;
     }
-    .field label .req { color:#c8850a; font-weight:400; font-size:11px; text-transform:lowercase; }
+    .field label .req { color:#003e7e; font-weight:400; font-size:11px; text-transform:lowercase; }
     .field input, .field select {
       width:100%; padding:11px 14px; border:1px solid #ddd;
       font-size:14px; color:#333; background:#fff;
@@ -139,13 +139,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     .btn-wrap { text-align:center; margin-top:36px; }
     .btn-aplicar {
       display:inline-block; padding:14px 52px;
-      background:#e6960b; color:#fff; border:none;
+      background:#43a047; color:#fff; border:none;
       font-size:14px; font-weight:700; letter-spacing:1px;
       text-transform:uppercase; cursor:pointer;
       transition:background 0.2s, box-shadow 0.2s;
       font-family:'Roboto',sans-serif;
     }
-    .btn-aplicar:hover { background:#d08509; box-shadow:0 4px 12px rgba(230,150,11,0.3); }
+    .btn-aplicar:hover { background:#388e3c; box-shadow:0 4px 12px rgba(67,160,71,0.3); }
     .btn-aplicar:disabled { background:#ccc; cursor:not-allowed; box-shadow:none; }
 
     /* ── Loading overlay ── */
