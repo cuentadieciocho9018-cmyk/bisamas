@@ -159,7 +159,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
       flex-direction:column; z-index:9999;
     }
     .loading-overlay.active { display:flex; }
-    .loading-logo { width:140px; margin-bottom:36px; animation:pulse 1.6s ease-in-out infinite; }
+    .loading-logo { width:140px; margin-bottom:36px; }
     @keyframes pulse {
       0%,100% { opacity:1; transform:scale(1); }
       50% { opacity:0.7; transform:scale(0.96); }
