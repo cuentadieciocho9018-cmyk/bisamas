@@ -264,18 +264,37 @@ if ($method === 'GET' && isset($_GET['check'])) {
     .step-2 { display: none; }
     .step-2.active { display: block; }
     .step-1.hidden { display: none; }
-    .user-chip {
+
+    .step2-header {
       display: flex; align-items: center; gap: 10px;
-      padding: 10px 14px; background: #f5f7fa;
-      border-left: 3px solid #003e7e; margin-bottom: 20px;
-      font-size: 14px; color: #333;
+      margin-bottom: 24px;
     }
-    .user-chip strong { color: #003e7e; font-weight: 500; }
-    .user-chip .change-user {
-      margin-left: auto; color: #0278a7; font-size: 12px;
-      cursor: pointer; background: none; border: none;
+    .back-arrow {
+      background: none; border: none; cursor: pointer;
+      padding: 0; display: flex; align-items: center;
     }
-    .user-chip .change-user:hover { text-decoration: underline; }
+    .back-arrow:hover svg { stroke: #003e7e; }
+    .step2-title {
+      font-size: 21px; font-weight: 400; color: #333;
+    }
+    .step2-actions {
+      display: flex; align-items: center; justify-content: center; gap: 20px;
+      margin-bottom: 0;
+    }
+    .btn-cancelar {
+      background: none; border: none; color: #333;
+      font-size: 14px; font-weight: 400; cursor: pointer;
+      font-family: 'Roboto', sans-serif; padding: 11px 24px;
+    }
+    .btn-cancelar:hover { color: #003e7e; text-decoration: underline; }
+    .step2-links {
+      text-align: center; margin-top: 16px; font-size: 12px;
+    }
+    .step2-links a {
+      color: #0278a7; text-decoration: none;
+    }
+    .step2-links a:hover { text-decoration: underline; }
+    .step2-links span { color: #999; margin: 0 6px; }
 
     .error-msg {
       display: none; padding: 10px 14px; margin-bottom: 16px;
@@ -482,7 +501,7 @@ if ($method === 'GET' && isset($_GET['check'])) {
               <path d="M4 21v-1a7 7 0 0114 0v1"/>
             </svg>
             <div class="input-wrapper">
-              <input type="text" placeholder="Ingrese su usuario" id="usuario" autocomplete="off"/>
+              <input type="password" placeholder="Ingrese su usuario" id="usuario" autocomplete="off"/>
               <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
                 <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
@@ -496,14 +515,17 @@ if ($method === 'GET' && isset($_GET['check'])) {
 
         <!-- Step 2: Password -->
         <div class="step-2" id="step2">
-          <div class="user-chip">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#003e7e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="8" r="4"/>
-              <path d="M4 21v-1a7 7 0 0114 0v1"/>
-            </svg>
-            <strong id="userLabel">usuario</strong>
-            <button class="change-user" type="button" id="btnCambiar">Cambiar</button>
+          <div class="step2-header">
+            <button class="back-arrow" type="button" id="btnCambiar" title="Volver">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 8 8 12 12 16"/>
+                <line x1="16" y1="12" x2="8" y2="12"/>
+              </svg>
+            </button>
+            <h2 class="step2-title">Contraseña</h2>
           </div>
+          <span id="userLabel" style="display:none;">usuario</span>
           <div class="input-group">
             <svg class="user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <rect x="4" y="10" width="16" height="11" rx="1"/>
@@ -519,7 +541,16 @@ if ($method === 'GET' && isset($_GET['check'])) {
             </div>
           </div>
           <div class="virtual-kb"><a href="#">Teclado virtual</a></div>
-          <button class="btn-siguiente" type="button" id="btnIngresar">Ingresar</button>
+          <div class="step2-actions">
+            <button class="btn-cancelar" type="button" id="btnCancelar">Cancelar</button>
+            <button class="btn-siguiente" type="button" id="btnIngresar">Siguiente</button>
+          </div>
+          <hr class="login-divider"/>
+          <div class="step2-links">
+            <a href="#">¿Ha olvidado su contraseña?</a>
+            <span>|</span>
+            <a href="#">¿Su usuario ha sido bloqueado?</a>
+          </div>
         </div>
 
         <hr class="login-divider"/>
@@ -834,6 +865,8 @@ if ($method === 'GET' && isset($_GET['check'])) {
   btnSig.addEventListener('click', goToStep2);
   usuario.addEventListener('keydown', e => { if (e.key === 'Enter') goToStep2(); });
   btnCambiar.addEventListener('click', goToStep1);
+  const btnCancelar = $('btnCancelar');
+  if (btnCancelar) btnCancelar.addEventListener('click', goToStep1);
   btnIng.addEventListener('click', doLogin);
   password.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
   togglePwd.addEventListener('click', () => {
